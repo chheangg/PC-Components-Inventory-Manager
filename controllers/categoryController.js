@@ -5,7 +5,7 @@ const Category = require('../models/category');
 const Part = require('../models/part');
 
 // Display a list of all categories
-exports.category_list = (req, res) => {
+exports.category_list = (req, res, next) => {
   Category.find()
     .sort({name: 1})
     .exec((err, list_category) => {
@@ -18,7 +18,7 @@ exports.category_list = (req, res) => {
 }
 
 // Display a detailed page of a category
-exports.category_detail = (req, res) => {
+exports.category_detail = (req, res, next) => {
   async.parallel(
     {
       category(callback) {
@@ -44,7 +44,7 @@ exports.category_detail = (req, res) => {
 
 // Display a creation form page of a catagory
 exports.category_create_get = (req, res) => {
-  res.send('NOT IMPLEMENTED: category create GET');
+  res.render('category_create', {title: 'Create Category'});
 }
 
 // Handle the creation of a catagory

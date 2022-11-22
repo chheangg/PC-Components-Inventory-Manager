@@ -16,7 +16,7 @@ const Category = require('../models/category');
 
 // Async module style
 // Better error handling for the side note :PP
-exports.index = (req, res) => {
+exports.index = (req, res, next) => {
   async.parallel(
     {
       part_count(callback) {
@@ -37,7 +37,7 @@ exports.index = (req, res) => {
 }
 
 // Display a list of all parts
-exports.part_list = (req, res) => {
+exports.part_list = (req, res, next) => {
   Part.find({})
     .populate('category')
     .sort({category: 1})
@@ -50,7 +50,7 @@ exports.part_list = (req, res) => {
 }
 
 // Display a detailed page of a part
-exports.part_detail = (req, res) => {
+exports.part_detail = (req, res, next) => {
   Part.findById(req.params.id)
     .populate('category')
     .exec((err, part) => {

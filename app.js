@@ -7,7 +7,7 @@ const logger = require('morgan');
 const config = require('./utilities/config');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
-const compression = require('compresser');
+const compression = require('compression');
 
 require('express-async-errors');
 
