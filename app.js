@@ -6,6 +6,9 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const config = require('./utilities/config');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
+const compression = require('compresser');
+
 require('express-async-errors');
 
 // Mongoose connection to MongoDB
@@ -27,10 +30,12 @@ const app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
+app.use(helmet());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(compression());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
