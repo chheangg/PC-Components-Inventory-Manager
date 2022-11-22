@@ -13,7 +13,7 @@ router.get('/', partController.index);
 /// CATeGORY ROUTES ///
 
 // GET request for the creation of a category
-router.get('/catagory/create', categoryController.category_create_get)
+router.get('/category/create', categoryController.category_create_get)
 
 // POST request for the creation of a category
 router.post('/category/create', categoryController.category_create_post);

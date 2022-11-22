@@ -3,7 +3,28 @@ extends layout
 block content 
   form(action='' method='POST') 
     label(for='category') Category Name: 
-    input(id='category' placeholder='Short abbreivated names like CPU, GPU, ...' name='name' required='true' value={category ? category.name : null})
+    input(
+      id='category' 
+      placeholder='Short abbreivated names like CPU, GPU, ...' 
+      name='name' 
+      required='true' 
+      value=category ? category.name : null
+      )
 
     label(for='category_description') Category Description:
-    input(id='category_description' placeholder='A brief overview of the category' name='description' required='true' value={category ? category.description : null}) 
+    input(
+      id='category_description' 
+      placeholder='A brief overview of the category' 
+      name='description' 
+      required='true' 
+      value=category ? category.description : null
+      ) 
+    
+    input(
+      type= 'submit'
+    )
+
+  if errors
+    ul 
+    each error in errors
+      li!= error.msg

@@ -8,7 +8,7 @@ const PartSchema = new Schema({
   },
   description: {
     type: String,
-    min: 3,
+    minLength: 3,
     required: true,
   },
   category: {

@@ -1,4 +1,5 @@
 const async = require('async');
+const { body, validationResult } = require('express-validator')
 
 // Models
 const Category = require('../models/category');
@@ -44,13 +45,40 @@ exports.category_detail = (req, res, next) => {
 
 // Display a creation form page of a catagory
 exports.category_create_get = (req, res) => {
-  res.render('category_create', {title: 'Create Category'});
+  res.render('category_form', {title: 'Create Category'});
 }
 
 // Handle the creation of a catagory
-exports.category_create_post = (req, res) => {
-  res.send('NOT IMPLEMENTED: category create POST');
-}
+exports.category_create_post = [
+  body('name', 'Name must not be empty')
+    .trim()
+    .isLength({min: 1})
+    .escape(),
+  body('description', 'Description must not be empty')
+    .trim()
+    .isLength({min: 3})
+    .escape(),
+  (req, res, next) => {
+    const errors = validationResult(req)
+
+    const category = new Category({
+      name: req.body.name,
+      description: req.body.description,
+    })
+
+    if (!errors.isEmpty()) {
+      return res.render('category_form', {title: 'Create Category', category, errors: errors.array()});
+    }
+
+    category.save((err) => {
+      if (err) {
+        return next(err);
+      }
+
+      res.redirect(category.url);
+    })
+  }
+]
 
 // Display a updating form page of a category
 exports.category_update_get = (req, res) => {

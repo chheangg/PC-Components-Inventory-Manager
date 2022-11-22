@@ -1,14 +1,11 @@
 extends layout
 
 block content 
- h2 Here are the list of computer parts: 
+ h2 Here are the list of computer parts categories: 
  ul 
-  each part in part_list
+  each category in category_list
     li 
       ul
         li Name: 
-          a(href=part.url)= part.name
-        li description: #{part.description}
-        li category: #{part.category.name}
-        li price: #{part.price}
-        li quantity: #{part.quantity}
+          a(href=category.url)= category.name
+        li description: #{category.description}
