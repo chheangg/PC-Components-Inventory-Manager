@@ -1,4 +1,5 @@
 const async = require('async');
+const { body, validationResult } = require('express-validator')
 
 // Models
 const Part = require('../models/part');
@@ -62,14 +63,69 @@ exports.part_detail = (req, res, next) => {
 }
 
 // Display a creation form page of a part
-exports.part_create_get = (req, res) => {
-  res.send('NOT IMPLEMENTED: Part create GET');
+exports.part_create_get = (req, res, next) => {
+  Category.find().exec((err, categories) => {
+    if (err) {
+      next(err);
+    }
+
+    res.render('part_form', {title: 'Create Part', categories})
+  })
 }
 
 // Handle the creation of a part
-exports.part_create_post = (req, res) => {
-  res.send('NOT IMPLEMENTED: Part create POST');
-}
+exports.part_create_post = [
+  body('name', 'Name must not be empty')
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body('description', 'Description must not be empty or too short')
+    .trim()
+    .isLength({ min: 3 })
+    .escape(),
+  body('category', 'Category must not be empty')
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body('price', 'Price must not be empty')
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body('quantity', 'Quantity must not be empty')
+    .trim()
+    .isLength({ min: 1})
+    .escape(),
+    (req, res, next) => {
+      const errors = validationResult(req);
+
+      const part = new Part({
+        name: req.body.name,
+        description: req.body.description,
+        category: req.body.category,
+        price: req.body.price,
+        quantity: req.body.quantity,
+      })
+
+      if (!errors.isEmpty()) {
+        Category
+          .find()
+          .exec((err, categories) => {
+            if (err) {
+              next(err);
+            }
+            res.render('part_form', {title: 'Create Part', categories, part, errors: errors.array()})
+          })
+        return;
+      }
+      
+      part.save((err) => {
+        if (err) {
+          next(err);
+        }
+        res.redirect(part.url);
+      })
+    }
+]
 
 // Display a updating form page of a part
 exports.part_update_get = (req, res) => {

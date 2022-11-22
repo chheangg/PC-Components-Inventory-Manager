@@ -1,0 +1,62 @@
+extends layout
+
+block content 
+  form(action='' method='POST') 
+    label(for='part') Part Name: 
+    input(
+      id='part_name' 
+      placeholder='Name of a computer part' 
+      name='name' 
+      required='true' 
+      value=part ? part.name : null
+      )
+
+    label(for='part_description') Part Description:
+    input(
+      id='part_description' 
+      placeholder='A brief overview of the computer part' 
+      name='description' 
+      required='true' 
+      value=part ? part.description : null
+      ) 
+
+    label(for='part_category') Part Category:
+    select#part_category(type='select' placeholder='Select category' name='category' required=true)
+      - categories.sort((a, b) => { (a.name.toUpperCase() < b.name.toUpperCase()) ? -1 : (a.name.toUpperCase() > b.name.toUpperCase()) ? 1 : 0})
+      each category in categories
+        if part
+          option(
+            value=category._id
+            selected= part.category._id.toString()==category._id.toString() || 
+                      part.category._id.toString()==category.toString() ? 'selected' : false
+          ) #{category.name}
+        else 
+          option(value=category._id) #{category.name}
+
+    label(for='part_price') Part Price:
+    input(
+      id='part_price' 
+      type='number'
+      placeholder='Price of the computer part' 
+      name='price' 
+      required='true' 
+      value=part ? part.price : null
+      ) 
+
+    label(for='part_quantity') Part Quantity:
+    input(
+      id='part_quantity' 
+      type='number'
+      placeholder='Number of computer part in stock' 
+      name='quantity' 
+      required='true' 
+      value=part ? part.quantity : null
+      ) 
+    input(
+      type= 'submit'
+    )
+
+  if errors
+    ul 
+    each error in errors
+      li!= error.msg

@@ -54,7 +54,7 @@ exports.category_create_post = [
     .trim()
     .isLength({min: 1})
     .escape(),
-  body('description', 'Description must not be empty')
+  body('description', 'Description must not be empty or too short')
     .trim()
     .isLength({min: 3})
     .escape(),
@@ -67,14 +67,13 @@ exports.category_create_post = [
     })
 
     if (!errors.isEmpty()) {
-      return res.render('category_form', {title: 'Create Category', category, errors: errors.array()});
+      res.render('category_form', {title: 'Create Category', category, errors: errors.array()});
     }
 
     category.save((err) => {
       if (err) {
-        return next(err);
+        next(err);
       }
-
       res.redirect(category.url);
     })
   }
