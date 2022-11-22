@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const config = require('./utilities/config');
 const mongoose = require('mongoose');
+require('express-async-errors');
 
 // Mongoose connection to MongoDB
 mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true});

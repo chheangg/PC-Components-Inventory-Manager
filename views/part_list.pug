@@ -1,0 +1,14 @@
+extends layout
+
+block content 
+ h2 Here are the list of computer parts: 
+ ul 
+  each part in part_list 
+    li 
+      ul
+        li Name: 
+          a(href=part.url)= part.name
+        li description: #{part.description}
+        li category: #{part.category.name}
+        li price: #{part.price}
+        li quantity: #{part.quantity}

@@ -27,7 +27,7 @@ const PartSchema = new Schema({
 })
 
 PartSchema.virtual('url').get(function () {
-  return `/catalog/parts/${this._id}`;
+  return `/catalog/part/${this._id}`;
 })
 
 module.exports = mongoose.model('Part', PartSchema);

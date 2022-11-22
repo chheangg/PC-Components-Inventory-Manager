@@ -1,0 +1,17 @@
+extends layout
+
+block content 
+ h2 Details
+ ul 
+  li Name: #{category.name}
+  li Description: #{category.description}
+ ul 
+  each part in parts
+    li 
+      ul
+        li Name: 
+          a(href=part.url)= part.name
+        li description: #{part.description}
+        li category: #{part.category.name}
+        li price: #{part.price}
+        li quantity: #{part.quantity}

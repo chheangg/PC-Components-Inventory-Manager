@@ -1,16 +1,64 @@
+const async = require('async');
+
+// Models
+const Part = require('../models/part');
+const Category = require('../models/category');
+
 // Display Catalog home page with count of each category and part
+
+// Promise-based style
+// exports.index = async (req, res) => {
+//   const partsCount = await Part.countDocuments();
+//   const categoriesCount = await Category.countDocuments();
+//   const data = { part_count: partsCount, category_count: categoriesCount };
+//   res.render('layout', {title: 'PC Component Inventory', data});
+// }
+
+// Async module style
+// Better error handling for the side note :PP
 exports.index = (req, res) => {
-  res.send('NOT IMPLEMENTED: Catalog home page');
+  async.parallel(
+    {
+      part_count(callback) {
+        Part.countDocuments({}, callback);
+      },
+      category_count(callback) {
+        Category.countDocuments({}, callback);
+      }
+    },
+    (err, results) => {
+      if (err) {
+        next(err);
+      }
+
+      res.render('layout', {title: 'PC Component Inventory', data: results})
+    }
+  )
 }
 
 // Display a list of all parts
 exports.part_list = (req, res) => {
-  res.send('NOT IMPLEMENTED: Part list');
+  Part.find({})
+    .populate('category')
+    .sort({category: 1})
+    .exec((err,  list_parts) => {
+      if (err) {
+        next(err);
+      }
+      res.render('part_list', {title: 'Computer part lists', part_list: list_parts});
+    })
 }
 
 // Display a detailed page of a part
 exports.part_detail = (req, res) => {
-  res.send(`NOT IMPLEMENTED: Part detail GET on id ${req.params.id}`);
+  Part.findById(req.params.id)
+    .populate('category')
+    .exec((err, part) => {
+      if (err) {
+        next(err);
+      }
+      res.render('part_detail', {title: part.name, part})
+    })
 }
 
 // Display a creation form page of a part

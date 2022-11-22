@@ -34,7 +34,7 @@ router.post('/category/:id/delete', categoryController.category_delete_post);
 router.get('/category/:id', categoryController.category_detail);
 
 // GET request for a list of all category //
-router.get('/categorys', categoryController.category_list);
+router.get('/categories', categoryController.category_list);
 
 /// PART ROUTES ///
 

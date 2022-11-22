@@ -1,11 +1,45 @@
+const async = require('async');
+
+// Models
+const Category = require('../models/category');
+const Part = require('../models/part');
+
 // Display a list of all categories
 exports.category_list = (req, res) => {
-  res.send('NOT IMPLEMENTED: category list GET');
+  Category.find()
+    .sort({name: 1})
+    .exec((err, list_category) => {
+      if (err) {
+        next(err);
+      }
+
+      res.render('category_list', {title: 'Computer Part Category list', category_list: list_category})
+    })
 }
 
 // Display a detailed page of a category
 exports.category_detail = (req, res) => {
-  res.send(`NOT IMPLEMENTED: category detail GET on id ${req.params.id}`);
+  async.parallel(
+    {
+      category(callback) {
+        Category.findById(req.params.id).exec(callback);
+      },
+      parts(callback) {
+        Part.find({category: req.params.id}).exec(callback);
+      }
+    },
+    (err, results) => {
+      if (err) {
+        next(err);
+      }
+      if (results === null) {
+        const err = new Error('Category not found')
+        err.status = 404;
+        next(err);
+      }
+      res.render('category_detail', {title: results.category.name, category: results.category, parts: results.parts});
+    }
+  )
 }
 
 // Display a creation form page of a catagory
