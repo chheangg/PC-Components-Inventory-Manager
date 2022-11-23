@@ -1,5 +1,20 @@
 const async = require('async');
 const { body, validationResult } = require('express-validator')
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs')
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './public/data/uploads')
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.fieldname + "-" + Date.now() + path.extname(file.originalname))
+  }
+})
+
+const upload = multer({storage: storage});
+
 
 // Models
 const Part = require('../models/part');
@@ -81,6 +96,7 @@ exports.part_create_get = (req, res, next) => {
 
 // Handle the creation of a part
 exports.part_create_post = [
+  upload.single('img'),
   body('name', 'Name must not be empty')
     .trim()
     .isLength({ min: 1 })
@@ -110,8 +126,8 @@ exports.part_create_post = [
         category: req.body.category,
         price: req.body.price,
         quantity: req.body.quantity,
+        img: req.file.path
       })
-
       if (!errors.isEmpty()) {
         Category
           .find()
@@ -157,6 +173,7 @@ exports.part_update_get = (req, res, err) => {
 
 // Handle the update of a part
 exports.part_update_post = [
+  upload.single('img'),
   body('name', 'Name must not be empty')
     .trim()
     .isLength({ min: 1 })
@@ -186,7 +203,8 @@ exports.part_update_post = [
       description: req.body.description,
       category: req.body.category,
       price: req.body.price,
-      quantity: req.body,quantity,
+      quantity: req.body.quantity,
+      img: req.file.path,
     }
 
     if (!errors.isEmpty()) {
@@ -198,12 +216,21 @@ exports.part_update_post = [
         res.render('part_form', {title: 'Update Part', categories: categories , part: part, errors: errors.array()})
       }))
     }
-
-    Part.findByIdAndUpdate(req.params.id, part, {}, (err, updatedPart) => {
+    Part.findByIdAndUpdate(req.params.id, part, {returnOriginal: true}, (err, oldPart) => {
       if (err) {
         next(err);
       }
-      res.redirect(updatedPart.url);
+
+      if (oldPart.img) {
+        fs.unlink('./' + oldPart.img, (err) => {
+          if (err) {
+            next(err);
+          }
+          res.redirect(oldPart.url);
+        })  
+      } else {
+        res.redirect(oldPart.url);
+      }
     })
   }
 ]
@@ -228,11 +255,20 @@ exports.part_delete_get = (req, res, err) => {
 
 // Handle the deletion of a part
 exports.part_delete_post = (req, res, next) => {
-  Part.findByIdAndDelete(req.body.partid, (err) => {
+  Part.findByIdAndDelete(req.body.partid, {returnOriginal: true}, (err, oldPart) => {
     if (err) {
       next(err);
     }
 
-    res.redirect('/catalog/parts');
+    if (oldPart.img) {
+      fs.unlink('./' + oldPart.img, (err) => {
+        if (err) {
+          next(err);
+        }
+        res.redirect('/catalog/parts');
+      })  
+    } else {
+      res.redirect('/catalog/parts');
+    }
   })
 }

@@ -48,7 +48,7 @@ router.post('/part/create', partController.part_create_post);
 router.get('/part/:id/update', partController.part_update_get);
 
 // POST request for the update of a part
-router.post('/part/:id/update', partController.part_create_post);
+router.post('/part/:id/update', partController.part_update_post);
 
 // GET request for the deletion of a part
 router.get('/part/:id/delete', partController.part_delete_get);

@@ -7,8 +7,7 @@ const logger = require('morgan');
 const config = require('./utilities/config');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
-const compression = require('compression');
-
+const compression = require('compression')
 require('express-async-errors');
 
 // Mongoose connection to MongoDB
@@ -37,7 +36,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(compression());
 app.use(express.static(path.join(__dirname, 'public')));
-
+app.use('/public/data/uploads', express.static(path.join(__dirname, 'public/data/uploads')))
 
 // Routes
 app.use('/', indexRouter);

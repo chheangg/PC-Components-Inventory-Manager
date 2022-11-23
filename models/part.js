@@ -24,6 +24,9 @@ const PartSchema = new Schema({
     type: Number,
     required: true,
   },
+  img: {
+    type: String
+  }
 })
 
 PartSchema.virtual('url').get(function () {
