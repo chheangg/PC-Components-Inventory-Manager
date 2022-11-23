@@ -80,14 +80,46 @@ exports.category_create_post = [
 ]
 
 // Display a updating form page of a category
-exports.category_update_get = (req, res) => {
-  res.send(`NOT IMPLEMENTED: category update GET on id ${req.params.id}`);
+exports.category_update_get = (req, res, err) => {
+  Category.findById(req.params.id).exec((err, category) => {
+    if (err) {
+      return err;
+    }
+
+    res.render('category_form', {title: 'Update Category', category});
+  })
 }
 
 // Handle the update of a catagory
-exports.category_update_post = (req, res) => {
-  res.send(`NOT IMPLEMENTED: category update POST on id ${req.params.id}`);
-}
+exports.category_update_post = [
+  body('name', 'Name must not be empty')
+    .trim()
+    .isLength({min: 1})
+    .escape(),
+  body('description', 'Description must not be empty or too short')
+    .trim()
+    .isLength({min: 3})
+    .escape(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+
+    const category = new Category({
+      name: req.body.name,
+      description: req.body.description,
+    })
+
+    if (!errors.isEmpty()) {
+      res.render('category_form', {title: 'Create Category', category, errors: errors.array()});
+    }
+
+    category.save((err) => {
+      if (err) {
+        next(err);
+      }
+      res.redirect(category.url);
+    })
+  }
+]
 
 // Display a deletion form page of a catagory
 exports.category_delete_get = (req, res) => {
