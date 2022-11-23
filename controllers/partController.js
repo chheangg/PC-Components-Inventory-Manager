@@ -126,7 +126,7 @@ exports.part_create_post = [
         category: req.body.category,
         price: req.body.price,
         quantity: req.body.quantity,
-        img: req.file.path
+        img: req.file ? req.file.path : '', 
       })
       if (!errors.isEmpty()) {
         Category
@@ -167,7 +167,7 @@ exports.part_update_get = (req, res, err) => {
       res.redirect('/catalog/parts')
     }
 
-    res.render('part_form', {title: 'Update Part', categories: results.categories , part: results.part})
+    res.render('part_form', {title: 'Update Part', categories: results.categories, part: results.part, pass: true})
   })
 }
 
@@ -194,6 +194,10 @@ exports.part_update_post = [
     .trim()
     .isLength({ min: 1})
     .escape(),
+  body('secret_pass', 'Secret pass is needed')
+    .trim()
+    .isLength({min: 1})
+    .escape(),
   (req, res, next) => {
     const errors = validationResult(req);
 
@@ -204,18 +208,29 @@ exports.part_update_post = [
       category: req.body.category,
       price: req.body.price,
       quantity: req.body.quantity,
-      img: req.file.path,
+      img: req.file ? req.file.path : '',
     }
-
-    if (!errors.isEmpty()) {
-      Category.find().exec((err, categories => {
+    
+    if (req.body.secret_pass !== process.env.SECRET_PASS) {
+      Category.find().exec((err, categories) => {
         if (err) {
           next(err);
         }
 
-        res.render('part_form', {title: 'Update Part', categories: categories , part: part, errors: errors.array()})
-      }))
+        res.render('part_form', {title: 'Update Part', categories: categories , part: part, pass: true, warning: 'Wrong password, not enough permission'})
+      })
+      return;
     }
+
+    if (!errors.isEmpty()) {
+      Category.find().exec((err, categories) => {
+        if (err) {
+          next(err);
+        }
+        res.render('part_form', {title: 'Update Part', categories: categories , part: part, pass: true, errors: errors.array()})
+      })
+    }
+
     Part.findByIdAndUpdate(req.params.id, part, {returnOriginal: true}, (err, oldPart) => {
       if (err) {
         next(err);
@@ -255,6 +270,16 @@ exports.part_delete_get = (req, res, err) => {
 
 // Handle the deletion of a part
 exports.part_delete_post = (req, res, next) => {
+  if (req.body.secret_pass !== process.env.SECRET_PASS) {
+    Part.findById(req.params.id).populate('category').exec((err, part) => {
+      if (err) {
+        next(err);
+      }
+
+      res.render('part_delete', {title: `Delete Part ${part.name}`, part, warning: 'Wrong password, not enough permission'});
+    })
+    return;
+  }
   Part.findByIdAndDelete(req.body.partid, {returnOriginal: true}, (err, oldPart) => {
     if (err) {
       next(err);

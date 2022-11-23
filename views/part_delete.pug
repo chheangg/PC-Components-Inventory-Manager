@@ -12,4 +12,14 @@ block content
   p Are you sure you want  to delete the Computer Part above?
   form(action="" method="POST")
     input(type='hidden' name='partid' value=part._id)
+    label(for='secret_pass') Secret Password: 
+    input(
+      id='secret_pass'
+      placeholder='Enter the secret password to make changes!'
+      name='secret_pass'
+      required=true
+    )
+    hr
+    if warning
+      div #{warning}
     button(type='submit') Yes

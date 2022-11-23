@@ -86,7 +86,7 @@ exports.category_update_get = (req, res, err) => {
       return err;
     }
 
-    res.render('category_form', {title: 'Update Category', category});
+    res.render('category_form', {title: 'Update Category', category, pass: true});
   })
 }
 
@@ -100,6 +100,10 @@ exports.category_update_post = [
     .trim()
     .isLength({min: 3})
     .escape(),
+  body('secret_pass', 'Secret pass is needed')
+    .trim()
+    .isLength({min: 1})
+    .escape(),
   (req, res, next) => {
     const errors = validationResult(req);
 
@@ -109,14 +113,15 @@ exports.category_update_post = [
       _id: req.params.id,
     };
 
-    console.log('hello');
-
-    if (!errors.isEmpty()) {
-      res.render('category_form', {title: 'Create Category', category, errors: errors.array()});
+    if (req.body.secret_pass !== process.env.SECRET_PASS) {
+      res.render('category_form', {title: 'Create Category', category, pass: true, warning: 'Wrong password, not enough permission'});
       return;
     }
 
-    console.log('hello');
+    if (!errors.isEmpty()) {
+      res.render('category_form', {title: 'Create Category', category, pass: true, errors: errors.array()});
+      return;
+    }
 
     Category.findByIdAndUpdate(req.params.id, category, {} ,(err, updatedCategory) => {
       if (err) {
@@ -166,6 +171,10 @@ exports.category_delete_post = (req, res) => {
       next(err);
     }
 
+    if (req.body.secret_pass !== process.env.SECRET_PASS) {
+      res.render('category_delete', {title: `Delete Category ${results.category.name}`, category: results.category, parts: results.parts, warning: 'Wrong password, not enough permission'});
+    }
+
     if (results.parts.length > 0) {
       res.render('category_delete', {title: `Delete Category ${results.category.name}`, category: results.category, parts: results.parts});
     }
@@ -174,7 +183,7 @@ exports.category_delete_post = (req, res) => {
       if (err) {
         next(err);
       }
-
+      console.log('hey')
       res.redirect('/catalog/categories');
     })
   })
