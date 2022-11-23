@@ -131,10 +131,51 @@ exports.category_update_post = [
 
 // Display a deletion form page of a catagory
 exports.category_delete_get = (req, res) => {
-  res.send(`NOT IMPLEMENTED: category delete GET on id ${req.params.id}`)
+  async.parallel({
+    category(callback) {
+      Category.findById(req.params.id).exec(callback);
+    },
+    parts(callback) {
+      Part.find({category: req.params.id}).populate().exec(callback);
+    }
+  },
+  (err, results) => {
+    if (err) {
+      next(err);
+    }
+
+    if (results.category === null || results === null) {
+      res.redirect('/catalog/categories');
+    }
+    res.render('category_delete', {title: `Delete Category ${results.category.name}`, category: results.category, parts: results.parts});
+  })
 }
 
 // Handle the deletion of a catagory
 exports.category_delete_post = (req, res) => {
-  res.send(`NOT IMPLEMENTED: category delete POST on id ${req.params.id}`)
+  async.parallel({
+    category(callback) {
+      Category.findById(req.params.id).exec(callback);
+    },
+    parts(callback) {
+      Part.find({category: req.params.id}).populate().exec(callback);
+    }
+  },
+  (err, results) => {
+    if (err) {
+      next(err);
+    }
+
+    if (results.parts.length > 0) {
+      res.render('category_delete', {title: `Delete Category ${results.category.name}`, category: results.category, parts: results.parts});
+    }
+
+    Category.findByIdAndDelete(req.body.categoryid, (err) => {
+      if (err) {
+        next(err);
+      }
+
+      res.redirect('/catalog/categories');
+    })
+  })
 }

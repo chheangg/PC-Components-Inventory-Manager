@@ -209,11 +209,30 @@ exports.part_update_post = [
 ]
 
 // Display a deletion form page of a part
-exports.part_delete_get = (req, res) => {
-  res.send(`NOT IMPLEMENTED: Part delete GET on id ${req.params.id}`)
+exports.part_delete_get = (req, res, err) => {
+  Part
+  .findById(req.params.id)
+  .populate('category')
+  .exec((err, part) => {
+    if (err) {
+      next(err);
+    }
+
+    if (part === null) {
+      res.redirect('/catalog/parts');
+    }
+
+    res.render('part_delete', {title: `Delete Part ${part.name}`, part});
+  })
 }
 
 // Handle the deletion of a part
-exports.part_delete_post = (req, res) => {
-  res.send(`NOT IMPLEMENTED: Part delete POST on id ${req.params.id}`)
+exports.part_delete_post = (req, res, next) => {
+  Part.findByIdAndDelete(req.body.partid, (err) => {
+    if (err) {
+      next(err);
+    }
+
+    res.redirect('/catalog/parts');
+  })
 }

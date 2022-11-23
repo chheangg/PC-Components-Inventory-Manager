@@ -1,0 +1,26 @@
+extends layout 
+
+block content 
+  h2 Details
+  ul 
+    li Name: #{category.name}
+    li Description: #{category.description}
+  if parts.length
+    hr
+    p The following PC parts still exist, a Category can only be deleted if it has no part left.
+    ul
+      each part in parts 
+        li 
+          ul
+            li Name: 
+              a(href=part.url)= part.name
+            li description: #{part.description}
+            li category: #{part.category.name}
+            li price: $ #{part.price}
+            li quantity: #{part.quantity}
+  else
+    hr
+    p Are you sure you want  to delete the Computer Part above?
+      form(action="" method="POST")
+        input(type='hidden' name='categoryid' value=category._id)
+        button(type='submit') Yes

@@ -1,0 +1,15 @@
+extends layout 
+
+block content 
+  h2 Details
+  ul 
+    li Name: #{part.name}
+    li description: #{part.description}
+    li category: #{part.category.name}
+    li price: $ #{part.price}
+    li quantity: #{part.quantity}
+  hr
+  p Are you sure you want  to delete the Computer Part above?
+  form(action="" method="POST")
+    input(type='hidden' name='partid' value=part._id)
+    button(type='submit') Yes
