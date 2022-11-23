@@ -103,21 +103,29 @@ exports.category_update_post = [
   (req, res, next) => {
     const errors = validationResult(req);
 
-    const category = new Category({
+    const category = {
       name: req.body.name,
       description: req.body.description,
-    })
+      _id: req.params.id,
+    };
+
+    console.log('hello');
 
     if (!errors.isEmpty()) {
       res.render('category_form', {title: 'Create Category', category, errors: errors.array()});
+      return;
     }
 
-    category.save((err) => {
+    console.log('hello');
+
+    Category.findByIdAndUpdate(req.params.id, category, {} ,(err, updatedCategory) => {
       if (err) {
         next(err);
       }
-      res.redirect(category.url);
+      console.log('hello');
+      res.redirect(updatedCategory.url);
     })
+    
   }
 ]
 

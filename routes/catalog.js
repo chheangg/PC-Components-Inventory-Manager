@@ -22,7 +22,7 @@ router.post('/category/create', categoryController.category_create_post);
 router.get('/category/:id/update', categoryController.category_update_get);
 
 // POST request for the update of a category
-router.post('/category/:id/update', categoryController.category_create_post);
+router.post('/category/:id/update', categoryController.category_update_post);
 
 // GET request for the deletion of a category
 router.get('/category/:id/delete', categoryController.category_delete_get);

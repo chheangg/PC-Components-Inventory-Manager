@@ -8,3 +8,9 @@ block content
   li category: #{part.category.name}
   li price: $ #{part.price}
   li quantity: #{part.quantity}
+ hr
+ ul 
+  li
+    a(href=`${part.url}/update`) Update Part
+  li 
+    a(href=`${part.url}/delete`) Delete Part
